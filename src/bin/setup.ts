@@ -5,7 +5,7 @@ import { spawn } from 'node:child_process';
 import { ensureDir } from 'fs-extra';
 import { createPromptModule } from 'inquirer';
 import { Port, Redis, TypeORM, NFS, Admin } from './questions';
-import { configs, createDefaultValue } from "../configs";
+import { configs, createDefaultSettings, createDefaultValue } from "../configs";
 import { dispose, useComponent } from "@evio/visox";
 import { DataBaseServer } from "../server/database";
 import { RedisServer } from "../server/redis";
@@ -77,6 +77,7 @@ export async function Setup() {
   const count = await User.getAdminCountByBasic();
   if (!count) {
     const AdminAnswers = await prompt(Admin);
+    configs.settings = createDefaultSettings();
     await User.register(AdminAnswers.name, AdminAnswers.password, AdminAnswers.email, 'basic', true);
     logger.info('Admin', `管理员账号\`${AdminAnswers.name}\`已注册成功！`);
   }

@@ -51,7 +51,7 @@ export const configs = {
 export function createDefaultSettings(): RegistrySettings {
   return {
     registable: true,
-    domain: 'http://192.168.31.244:3000',
+    domain: 'http://127.0.0.1:3000',
     downloadSyncTime: 30,
     user: {
       login: {

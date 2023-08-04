@@ -1,6 +1,6 @@
 {
   "name": "@nppm/registry",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "JavaScript Private Package Manager, Registry &amp; Website",
   "main": "dist/index.js",
   "scripts": {
