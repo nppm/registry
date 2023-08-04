@@ -21,6 +21,7 @@
   ],
   "files": [
     "dist",
+    "tempalte",
     "!dist/test.js",
     "!dist/test.d.ts"
   ],

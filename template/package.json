@@ -1,0 +1,8 @@
+{
+  "name": "nppm",
+  "version": "0.0.0",
+  "description": "JavaScript Private Package Manager, Registry &amp; Website",
+  "dependencies": {
+    "@nppm/registry": "^1.0.6"
+  }
+}

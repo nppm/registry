@@ -67,3 +67,14 @@ export function createDefaultSettings(): RegistrySettings {
     }
   }
 }
+
+export function createDefaultValue(): RegistryConfigs {
+  return {
+    port: 3000,
+    debug: false,
+    nfs: null,
+    requestBodyJSONLimit: '10mb',
+    database: null,
+    redis: null,
+  }
+}

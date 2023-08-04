@@ -12,6 +12,7 @@ import Bootstrap from '../index';
 import { resolve } from 'node:path';
 import { existsSync } from 'node:fs';
 import { importDynamic } from '@evio/visox-http';
+import { Setup } from './setup';
 
 const { version } = require('../../package.json');
 
@@ -41,7 +42,7 @@ program
   })
 
 program
-  .command('bootstrap [file]')
+  .command('boot [file]')
   .description('启动服务')
   .action(async (file: string) => {
     const cwd = process.cwd();
@@ -51,6 +52,11 @@ program
     }
     return await Bootstrap(await importDynamic(configsFile));
   })
+
+program
+  .command('setup')
+  .description('安装新的程序')
+  .action(Setup);
 
 program.command('*')
   .allowUnknownOption(true)

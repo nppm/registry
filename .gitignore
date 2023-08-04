@@ -30,3 +30,4 @@ test.*
 logs
 test
 tgz
+nppm.configs.json
