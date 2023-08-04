@@ -8,10 +8,8 @@ import { RemoveRegistry } from './remove-registry';
 import { UseRegistry } from './use-registry';
 import { ScopeRegistry } from './scope-registry';
 import { Registry } from './registry';
-import Bootstrap from '../index';
 import { resolve } from 'node:path';
 import { existsSync } from 'node:fs';
-import { importDynamic } from '@evio/visox-http';
 import { Setup } from './setup';
 
 const { version } = require('../../package.json');
@@ -50,7 +48,7 @@ program
     if (!existsSync(configsFile)) {
       throw new Error('缺少配置文件');
     }
-    return await Bootstrap(await importDynamic(configsFile));
+    require(configsFile);
   })
 
 program
