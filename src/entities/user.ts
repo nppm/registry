@@ -114,13 +114,14 @@ export class NPMUserEntity {
   })
   public gmtm: Date;
 
-  public add(username: string, password: string, email: string, basic: boolean) {
+  public add(username: string, password: string, email: string, basic: boolean, admin: boolean = false) {
     this.account = username;
     this.basic = basic;
     this.email = email;
     this.gmtc = this.gmtm = new Date();
     this.salt = generate(8).toLowerCase();
     this.forbiden = false;
+    this.admin = admin;
     this.token = MD5(this.salt + ':' + password).toString();
     return this;
   }

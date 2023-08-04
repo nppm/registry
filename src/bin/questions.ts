@@ -52,6 +52,26 @@ export const TypeORM: QuestionCollection<RegistryConfigs['database']> = [
   },
 ]
 
+export const Admin: QuestionCollection<{ name: string, password: string, email: string }> = [
+  {
+    type: 'input',
+    name: 'name',
+    message: '管理员账号',
+    default: 'admin',
+  },
+  {
+    type: 'password',
+    name: 'password',
+    message: '管理员密码',
+  },
+  {
+    type: 'input',
+    name: 'email',
+    message: '管理员邮箱',
+    default: 'admin@example.com',
+  },
+]
+
 export const Redis: QuestionCollection<RegistryConfigs['redis']> = [
   {
     type: 'input',

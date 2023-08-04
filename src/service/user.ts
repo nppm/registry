@@ -13,6 +13,13 @@ export class UserService extends MergedService {
       : null;
   }
 
+  public getAdminCountByBasic() {
+    return this.repository.countBy({
+      admin: true,
+      basic: true,
+    });
+  }
+
   public save(user: NPMUserEntity) {
     return this.repository.save(user);
   }
@@ -21,19 +28,19 @@ export class UserService extends MergedService {
     return this.repository.findOneBy({ account });
   }
 
-  public add(username: string, password: string, email: string, basic: boolean,) {
-    return this.save(this.repository.create().add(username, password, email, basic));
+  public add(username: string, password: string, email: string, basic: boolean, admin?: boolean) {
+    return this.save(this.repository.create().add(username, password, email, basic, !!admin));
   }
 
   public getOneById(id: number) {
     return this.repository.findOneBy({ id });
   }
 
-  public async register(username: string, password: string, email: string, basic?: 'thirdpart') {
+  public async register(username: string, password: string, email: string, basic?: 'thirdpart' | 'basic', admin?: boolean) {
     if (!configs.settings.registable) throw new Error('无法注册');
     let user = await this.getOneByAccount(username);
     if (user) throw new Error('用户已存在');
-    user = await this.add(username, password, email, basic === 'thirdpart' ? false : true);
+    user = await this.add(username, password, email, basic === 'thirdpart' ? false : true, !!admin);
     const Token = new UserTokenService(this.conn, user);
     const token = await Token.add(false, this.createExpire());
     user = await this.save(user.updateTid(token.id));

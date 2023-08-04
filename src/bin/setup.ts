@@ -4,11 +4,12 @@ import { existsSync, writeFileSync, readFileSync } from 'node:fs';
 import { spawn } from 'node:child_process';
 import { ensureDir } from 'fs-extra';
 import { createPromptModule } from 'inquirer';
-import { Port, Redis, TypeORM, NFS } from './questions';
+import { Port, Redis, TypeORM, NFS, Admin } from './questions';
 import { configs, createDefaultValue } from "../configs";
 import { dispose, useComponent } from "@evio/visox";
 import { DataBaseServer } from "../server/database";
 import { RedisServer } from "../server/redis";
+import { UserService } from "../service/user";
 
 export async function Setup() {
   const prompt = createPromptModule();
@@ -26,7 +27,7 @@ export async function Setup() {
     }
   }
   configs.value.database = TypeORMAnswers;
-  await useComponent(DataBaseServer);
+  const connection = await useComponent(DataBaseServer);
   logger.info('Vaildate', 'DataBase Success!');
   console.log();
 
@@ -70,6 +71,15 @@ export async function Setup() {
   const targetPackageFile = resolve(process.cwd(), 'package.json');
   writeFileSync(targetIndexFile, indexContent, 'utf8');
   writeFileSync(targetPackageFile, packageContent, 'utf8');
+
+  // 创建管理员账号
+  const User = new UserService(connection);
+  const count = await User.getAdminCountByBasic();
+  if (!count) {
+    const AdminAnswers = await prompt(Admin);
+    await User.register(AdminAnswers.name, AdminAnswers.password, AdminAnswers.email, 'basic', true);
+    logger.info('Admin', `管理员账号\`${AdminAnswers.name}\`已注册成功！`);
+  }
 
   console.log();
   logger.warn('Waiting', '程序正在安装依赖，请稍候...');
