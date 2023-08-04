@@ -19,6 +19,9 @@ JavaScript Private Package Manager, Registry &amp; Website
 - `npm star`
 - `npm unstar`
 - `npm profile`
+- `npm token`
+- `npm org`
+- `npm access`    # 待开发
 
 ## Setup & Bootstrap & Usage
 
