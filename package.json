@@ -1,6 +1,6 @@
 {
   "name": "@nppm/registry",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "JavaScript Private Package Manager, Registry &amp; Website",
   "main": "dist/index.js",
   "scripts": {
@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "@evio/visox": "^1.0.1",
-    "@evio/visox-http": "^1.0.7",
+    "@evio/visox-http": "^1.0.8",
     "@evio/visox-ioredis": "^1.0.2",
     "@evio/visox-typeorm": "^1.0.2",
     "@evio/visox-typeorm-ioredis-service": "^1.0.2",

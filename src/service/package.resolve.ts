@@ -5,7 +5,6 @@ import { ensureDir, writeFile } from 'fs-extra';
 import { PackageInComingProps, PackageManifest, PackageVersionsCompareProps } from "../types";
 import { NPMVersionEntity } from '../entities/version';
 import { configs } from '../configs';
-import { importDynamic } from '@evio/visox-http';
 
 export class PackageResolve {
   constructor(
@@ -61,13 +60,13 @@ export class PackageResolve {
       }
     }
 
-    const md5Hex = await importDynamic('md5-hex');
+    const md5Hex = await import('md5-hex');
 
     return {
       tarball: tarballBuffer,
       version,
       tag: distTagKeys[0],
-      md5: md5Hex(tarballBuffer),
+      md5: md5Hex.default(tarballBuffer),
     }
   }
 
