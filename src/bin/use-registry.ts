@@ -1,8 +1,8 @@
 import axios from 'axios';
-import logger from '../lib/logger';
 import { URL } from 'node:url';
 import { Registry } from './registry';
 import { createPromptModule } from 'inquirer';
+import { logger } from '../logger';
 
 export async function UseRegistry() {
   const registry = new Registry();

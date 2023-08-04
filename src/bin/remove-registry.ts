@@ -1,4 +1,4 @@
-import logger from '../lib/logger';
+import { logger } from '../logger';
 import { Registry } from './registry';
 import { createPromptModule } from 'inquirer';
 export async function RemoveRegistry() {

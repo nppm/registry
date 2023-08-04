@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Registry } from "./registry";
 import { URL } from 'node:url';
-import logger from '../lib/logger';
+import { logger } from '../logger';
 
 export async function ScopeRegistry() {
   const registry = new Registry();

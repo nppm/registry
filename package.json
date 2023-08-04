@@ -21,7 +21,8 @@
   ],
   "files": [
     "dist",
-    "!dist/test.js"
+    "!dist/test.js",
+    "!dist/test.d.ts"
   ],
   "bin": {
     "nppm": "./dist/bin/index.js"

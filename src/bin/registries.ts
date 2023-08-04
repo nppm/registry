@@ -1,4 +1,4 @@
-import logger from "../lib/logger";
+import { logger } from "../logger";
 import { Registry } from "./registry";
 
 export function Registries() {
