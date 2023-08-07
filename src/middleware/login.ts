@@ -14,8 +14,17 @@ export async function Admin(ctx: Context, next: Next) {
 }
 
 export async function Login(ctx: Context, next: Next) {
-  const authorization = ctx.headers['authorization'];
+  let authorization = ctx.headers['authorization'];
+  if (authorization === 'desktop') {
+    authorization = ctx.cookies.get('authorization', {
+      signed: true,
+    })
+  }
+
   if (!authorization) return NotLogin();
+  if (authorization.split(' ')[0] !== 'Bearer') {
+    return NotLogin();
+  }
 
   let user: NPMUserEntity, updateRedisToken: NPMTokenEntity;
   const token = authorization.split(' ')[1];

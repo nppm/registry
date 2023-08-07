@@ -24,7 +24,6 @@ export interface RegistryConfigs {
 export interface RegistrySettings {
   registable: boolean, // 是否允许用户注册
   domain: string, // 网站域名 127.0.0.1 或者 www.qq.com
-  downloadSyncTime: number, // 秒 下载两更新到数据库的时间间隔
   user: {
     login: {
       expire: number, // 登录有效期 单位：秒 如果是 0 永不过期
@@ -52,7 +51,6 @@ export function createDefaultSettings(): RegistrySettings {
   return {
     registable: true,
     domain: 'http://127.0.0.1:3000',
-    downloadSyncTime: 30,
     user: {
       login: {
         expire: 0,
