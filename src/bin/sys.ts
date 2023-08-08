@@ -151,7 +151,10 @@ export async function SystemSetting() {
   await json('/~/settings', {
     ...registry.flatOptions,
     method: 'POST',
-    body: res
+    body: JSON.stringify(res),
+    headers: {
+      'content-type': 'application/json',
+    },
   })
 
   logger.info('Configs', `configs.${key} = ${value}`);

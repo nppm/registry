@@ -37,10 +37,13 @@ export async function addScope(scope: string, priv: boolean) {
   await json('/~/scope', {
     ...registry.flatOptions,
     method: 'POST',
-    body: {
+    body: JSON.stringify({
       "name": scope,
       "priv": priv
-    }
+    }),
+    headers: {
+      'content-type': 'application/json',
+    },
   });
   console.log(`+ Scope <${scope}>: ${priv ? 'private' : 'public'}`);
 }
@@ -64,9 +67,12 @@ export async function confirmScope(scope: string, value: boolean) {
   await json('/~/scope/' + scope + '/confirm', {
     ...registry.flatOptions,
     method: 'POST',
-    body: {
+    body: JSON.stringify({
       value,
-    }
+    }),
+    headers: {
+      'content-type': 'application/json',
+    },
   });
   console.log(`- Scope <${scope}>: ${value ? 'confirmed' : 'unconfirmed'}`);
 }
@@ -77,9 +83,12 @@ export async function ScopePrivate(scope: string, value: boolean) {
   await json('/~/scope/' + scope + '/private', {
     ...registry.flatOptions,
     method: 'POST',
-    body: {
+    body: JSON.stringify({
       value,
-    }
+    }),
+    headers: {
+      'content-type': 'application/json',
+    },
   });
   console.log(`- Scope <${scope}>: ${value ? 'private' : 'public'}`);
 }
@@ -90,9 +99,12 @@ export async function ScopeOwner(scope: string, user: string) {
   await json('/~/scope/' + scope + '/owner', {
     ...registry.flatOptions,
     method: 'POST',
-    body: {
+    body: JSON.stringify({
       value: user,
-    }
+    }),
+    headers: {
+      'content-type': 'application/json',
+    },
   });
   console.log(`+ Scope <${scope}>: ${user} owned`);
 }
