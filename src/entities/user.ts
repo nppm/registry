@@ -138,6 +138,12 @@ export class NPMUserEntity {
     return this;
   }
 
+  public updateAdmin(value: boolean) {
+    this.admin = value;
+    this.gmtm = new Date();
+    return this;
+  }
+
   public updateProfile<T extends ProfileKeys>(key: T, value: T extends 'password' ? { old: string, new: string } : string) {
     if (key === 'tfa') {
       throw new Error('不支持 tfa');

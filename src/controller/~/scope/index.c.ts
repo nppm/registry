@@ -18,7 +18,7 @@ export default [
   defineController('GET', [], async req => {
     const Scope = new ScopeService(req.conn);
     const scopes = await Scope.getAllByNotDeleted();
-    return req.response(scopes.map(scope => scope.name));
+    return req.response(scopes);
   }),
 
   /**

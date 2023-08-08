@@ -90,7 +90,7 @@ export default [
     return req.response({
       ok: true,
       user: user.account,
-      role: SCOPE_ROLE_ENUM[_user.role],
+      role: body.role,
       org: {
         name: scope.name,
         size: (await ScopeUser.getAll()).length,

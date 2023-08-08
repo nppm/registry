@@ -8,7 +8,9 @@ export default [
   defineController('GET', [
     NPMError(),
     Login,
-  ], req => req.response(configs.settings)),
+  ], req => req.response(Object.assign({}, configs.settings, {
+    version: configs.version,
+  }))),
 
   defineController('POST', [
     NPMError(),

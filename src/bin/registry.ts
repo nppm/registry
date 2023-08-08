@@ -1,7 +1,11 @@
+import Configs from '@npmcli/config';
 import { resolve } from 'node:path';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { URL } from 'node:url';
 import { spawn } from 'node:child_process';
+import { configs } from '../configs';
+
+const { definitions, flatten, shorthands } = require('@npmcli/config/lib/definitions');
 
 interface NPPM_RC {
   registries: string[],
@@ -10,12 +14,40 @@ interface NPPM_RC {
 }
 
 export class Registry {
+  public command: string;
   private readonly nppmrc = resolve(process.env.HOME, 'NPPM.json');
   private readonly value = Registry.getDefaultValue();
+  public readonly config = new Configs({
+    npmPath: resolve(__dirname, '../../node_modules/npm'),
+    definitions,
+    flatten,
+    shorthands,
+    argv: [],
+  })
+
+  static async npm(command: string) {
+    const registry = new Registry();
+    if (!registry.current) {
+      throw new Error('您还未对系统进行 registry 配置，请使用 `nppm registry add` 或者 `nppm registy use` 命令来设定');
+    }
+    registry.command = command;
+    await registry.config.load();
+    return registry;
+  }
+
   constructor() {
     if (existsSync(this.nppmrc)) {
       this.value = JSON.parse(readFileSync(this.nppmrc, 'utf8'));
     }
+  }
+
+  get flatOptions() {
+    const { flat } = this.config;
+    flat.nodeVersion = process.version;
+    flat.npmVersion = configs.version;
+    flat.npmCommand = this.command;
+    flat.registry = this.current;
+    return flat;
   }
 
   get current() {

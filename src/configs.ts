@@ -41,6 +41,7 @@ export interface RegistrySettings {
 export const configs = {
   value: null as RegistryConfigs,
   settings: null as RegistrySettings,
+  version: require('../package.json').version,
   toPath(path: string) {
     const prefix = configs.value.database.entityPrefix || 'npm';
     return prefix + ':' + path;

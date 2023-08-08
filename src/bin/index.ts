@@ -11,6 +11,10 @@ import { Registry } from './registry';
 import { resolve } from 'node:path';
 import { existsSync } from 'node:fs';
 import { Setup } from './setup';
+import { SystemList, SystemSetting } from './sys';
+import { Admin } from './admin';
+import { logger } from '../logger';
+import { GetScopes, ScopeOwner, ScopePrivate, addScope, confirmScope, removeScope } from './scope';
 
 const { version } = require('../../package.json');
 
@@ -56,6 +60,54 @@ program
   .description('安装新的程序')
   .action(Setup);
 
+program
+  .command('configs [cmd]')
+  .description('设置全局配置')
+  .action((cmd: 'ls' | 'set') => {
+    switch (cmd) {
+      case 'ls': return Wrapper(SystemList)(cmd);
+      case 'set': return Wrapper(SystemSetting)(cmd);
+    }
+  })
+
+program
+  .command('admin <cmd> <user>')
+  .description(`
+  nppm admin add :user
+  nppm admin rm :user
+  `)
+  .action(Wrapper(Admin))
+
+program
+  .command('scope <cmd> [scope]')
+  .description(`
+  nppm scope add :scope         # 添加 scope
+  nppm scope ls                 # 查看所有 scopes
+  nppm scope rm :scope          # 删除 scope
+  nppm scope confirm :scope     # scope 审批通过
+  nppm scope unconfirm :scope   # scope 审批不通过
+  nppm scope private :scope     # scope 私有
+  nppm scope public :scope      # scope 公有
+  `)
+  .option('-p, --priv', '是否是私有的模块', false)
+  .option('-f, --force', '是否强制删除', false)
+  .action((cmd: 'add' | 'ls' | 'rm' | 'confirm' | 'unconfirm' | 'private' | 'public', scope: string, ops: { priv?: boolean, force?: boolean }) => {
+    switch (cmd) {
+      case 'ls': return Wrapper(GetScopes)();
+      case 'add': return Wrapper(addScope)(scope, !!ops.priv);
+      case 'rm': return Wrapper(removeScope)(scope, !!ops.force);
+      case 'confirm': return Wrapper(confirmScope)(scope, true);
+      case 'unconfirm': return Wrapper(confirmScope)(scope, false);
+      case 'private': return Wrapper(ScopePrivate)(scope, true);
+      case 'public': return Wrapper(ScopePrivate)(scope, false);
+    }
+  })
+
+program
+  .command('scope.owner <scope> <user>')
+  .description('模块所有者转让')
+  .action(Wrapper(ScopeOwner))
+
 program.command('*')
   .allowUnknownOption(true)
   .action(() => {
@@ -79,3 +131,13 @@ program.command('*')
   });
 
 program.parseAsync(process.argv);
+
+function Wrapper(callback: (...args: any[]) => Promise<any>) {
+  return async (...args: any[]) => {
+    try {
+      await callback(...args);
+    } catch (e) {
+      logger.error('Error', e.body?.reason || e.body?.error || e.message);
+    }
+  }
+}

@@ -63,7 +63,7 @@ $ nppm registry scope # 更新当前 registry 的 scopes
 $ nppm install [<package-spec> ...]
 ```
 
-> 注意： 安装完毕后，请优先前往后台系统，在设置栏中修改正确的本站的域名，这个关系到后续上传包的域名地址是否正确，否则拉包过程可能报错。
+> 注意： 安装完毕后，请优先使用`nppm configs set`命令选择`域名`更新域名，这个关系到后续上传包的域名地址是否正确，否则拉包过程可能报错。
 
 ## Thirdpart Login Mode
 
@@ -92,4 +92,44 @@ type authorization = (data: { create?: boolean, hostname: string }) => Promise<{
   loginUrl: string,
   doneUrl: string
 }>
+```
+
+## NPPM Support
+
+```bash
+# 查看全局配置
+$ nppm configs ls
+
+# 更新局部配置
+$ nppm configs set
+
+# 设置管理员
+$ nppm admin add <user>
+
+# 删除管理员
+$ nppm admin rm <user>
+
+# 查看所有 scope 目录
+$ nppm scope ls
+
+# 添加一个 scope: -p 私有
+$ nppm scope add <scope> [-p]
+
+# 删除一个 scope: -f 强制
+$ nppm scope rm <scope> <-f>
+
+# 让一个 scope 审批通过，注意操作者必须为管理员
+$ nppm scope confirm <scope>
+
+# 让一个 scope 审批不通过，注意操作者必须为管理员
+$ nppm scope unconfirm <scope>
+
+# 让一个 scope 变为私有化
+$ nppm scope private <scope>
+
+# 让一个 scope 变为公有化
+$ nppm scope public <scope>
+
+# 转让某个 scope 的所有者身份给另一个人
+$ nppm scope.owner <scope> <user>
 ```

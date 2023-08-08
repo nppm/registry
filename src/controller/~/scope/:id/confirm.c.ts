@@ -16,11 +16,11 @@ export default defineController<'id'>('POST', [
   Login,
   Admin,
 ], async req => {
-  const id = Number(req.getParam('id'));
+  const id = req.getParam('id');
   const body = req.getBody<IProps>();
   const Scope = new ScopeService(req.conn);
 
-  const scope = await Scope.getOneByIdNotDeleted(id);
+  const scope = await Scope.getOneByNameNotDeleted(id);
   if (!scope) throw new Error('组织不存在');
 
   return req.response(await Scope.save(scope.updateComfirmStatus(body.value)));
