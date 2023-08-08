@@ -1,4 +1,3 @@
-import { logger } from "../logger";
 import { Registry } from "./registry";
 import { json } from 'npm-registry-fetch';
 
@@ -11,7 +10,7 @@ export async function Admin(cmd: 'add' | 'rm', user: string) {
 
   await json('/~/user/admin', {
     ...registry.flatOptions,
-    method: 'post',
+    method: 'POST',
     body: {
       name: user,
       value: cmd === 'add' ? true : false

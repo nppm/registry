@@ -150,7 +150,7 @@ export async function SystemSetting() {
 
   await json('/~/settings', {
     ...registry.flatOptions,
-    method: 'post',
+    method: 'POST',
     body: res
   })
 

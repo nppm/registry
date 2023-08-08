@@ -36,7 +36,7 @@ export async function addScope(scope: string, priv: boolean) {
   const registry = await Registry.npm('scope');
   await json('/~/scope', {
     ...registry.flatOptions,
-    method: 'post',
+    method: 'POST',
     body: {
       "name": scope,
       "priv": priv
@@ -52,7 +52,7 @@ export async function removeScope(scope: string, force: boolean) {
   const registry = await Registry.npm('scope');
   await json('/~/scope/' + scope, {
     ...registry.flatOptions,
-    method: 'delete',
+    method: 'DELETE',
   });
 
   console.log(`- Scope <${scope}>`);
@@ -63,7 +63,7 @@ export async function confirmScope(scope: string, value: boolean) {
   const registry = await Registry.npm('scope');
   await json('/~/scope/' + scope + '/confirm', {
     ...registry.flatOptions,
-    method: 'post',
+    method: 'POST',
     body: {
       value,
     }
@@ -76,7 +76,7 @@ export async function ScopePrivate(scope: string, value: boolean) {
   const registry = await Registry.npm('scope');
   await json('/~/scope/' + scope + '/private', {
     ...registry.flatOptions,
-    method: 'post',
+    method: 'POST',
     body: {
       value,
     }
@@ -89,7 +89,7 @@ export async function ScopeOwner(scope: string, user: string) {
   const registry = await Registry.npm('scope');
   await json('/~/scope/' + scope + '/owner', {
     ...registry.flatOptions,
-    method: 'post',
+    method: 'POST',
     body: {
       value: user,
     }
