@@ -15,11 +15,12 @@ export async function ScopeRegistry() {
   const obj = new URL(registry.current);
   obj.pathname = '/~/scope';
   const scopes = await axios.get<IResponse[]>(obj.toString()).catch(err);
+  const names = scopes.data.map(scope => scope.name);
   if (scopes.data?.length) {
-    await registry.execScope(registry.current, ...scopes.data.map(scope => scope.name));
+    await registry.execScope(registry.current, ...names);
   }
-  registry.use(registry.current, scopes.data.map(scope => scope.name)).save();
-  logger.info('Scope', '更新成功');
+  registry.use(registry.current, names).save();
+  logger.info('+', names.join(', '));
 }
 
 function err(e: any) {

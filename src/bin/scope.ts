@@ -1,6 +1,7 @@
 import Table from 'cli-table';
 import { Registry } from "./registry";
 import { json } from 'npm-registry-fetch';
+import { logger } from '../logger';
 
 export async function GetScopes() {
   const registry = await Registry.npm('scope');
@@ -45,7 +46,7 @@ export async function addScope(scope: string, priv: boolean) {
       'content-type': 'application/json',
     },
   });
-  console.log(`+ Scope <${scope}>: ${priv ? 'private' : 'public'}`);
+  logger.info('+', `<${scope}>: ${priv ? 'private' : 'public'}`);
 }
 
 export async function removeScope(scope: string, force: boolean) {
@@ -58,7 +59,7 @@ export async function removeScope(scope: string, force: boolean) {
     method: 'DELETE',
   });
 
-  console.log(`- Scope <${scope}>`);
+  logger.info('-', `${scope}`);
 }
 
 export async function confirmScope(scope: string, value: boolean) {
@@ -74,7 +75,7 @@ export async function confirmScope(scope: string, value: boolean) {
       'content-type': 'application/json',
     },
   });
-  console.log(`- Scope <${scope}>: ${value ? 'confirmed' : 'unconfirmed'}`);
+  logger.info('-', `${scope}: ${value ? 'confirmed' : 'unconfirmed'}`);
 }
 
 export async function ScopePrivate(scope: string, value: boolean) {
@@ -90,7 +91,7 @@ export async function ScopePrivate(scope: string, value: boolean) {
       'content-type': 'application/json',
     },
   });
-  console.log(`- Scope <${scope}>: ${value ? 'private' : 'public'}`);
+  logger.info('-', `${scope}: ${value ? 'private' : 'public'}`);
 }
 
 export async function ScopeOwner(scope: string, user: string) {
@@ -107,4 +108,5 @@ export async function ScopeOwner(scope: string, user: string) {
     },
   });
   console.log(`+ Scope <${scope}>: ${user} owned`);
+  logger.info('+', `${scope}: ${user} owned`)
 }

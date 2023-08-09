@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "@evio/visox": "^1.0.1",
-    "@evio/visox-http": "^1.0.8",
+    "@evio/visox-http": "^1.0.9",
     "@evio/visox-ioredis": "^1.0.2",
     "@evio/visox-typeorm": "^1.0.2",
     "@evio/visox-typeorm-ioredis-service": "^1.0.2",

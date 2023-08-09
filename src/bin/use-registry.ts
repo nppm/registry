@@ -27,7 +27,7 @@ export async function UseRegistry() {
     await registry.execScope(uri, ...scopes.data);
   }
   registry.use(uri, scopes.data).save();
-  logger.info('Use', uri);
+  logger.info('#', uri);
 }
 
 function err(e: any) {

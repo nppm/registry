@@ -18,5 +18,5 @@ export async function RemoveRegistry() {
     })
   })
   registry.remove(uri).save();
-  logger.info('Del', uri);
+  logger.info('-', uri);
 }

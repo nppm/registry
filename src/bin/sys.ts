@@ -157,5 +157,5 @@ export async function SystemSetting() {
     },
   })
 
-  logger.info('Configs', `configs.${key} = ${value}`);
+  logger.info('+', `configs.${key} = ${value}`);
 }

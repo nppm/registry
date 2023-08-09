@@ -29,7 +29,7 @@ export async function AddRegistry() {
     await Factory.execScope(registry, ...scopes.data);
   }
   Factory.use(registry, scopes.data).save();
-  logger.info('Registry', '添加源成功！');
+  logger.info('+', registry);
 }
 
 function err(e: any) {
