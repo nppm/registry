@@ -6,6 +6,99 @@ import { RedisServer } from "./server/redis";
 import { SettingService } from "./service/setting";
 import { DataBaseServer } from "./server/database";
 import { HTTPServer } from "./server/http";
+import { NPMDownloadEntity } from './entities/download';
+import { NPMKeyWordEntity } from './entities/keyword';
+import { NPMMaintainerEntity } from './entities/maintainer';
+import { NPMPackageEntity } from './entities/package';
+import { NPMScopeEntity } from './entities/scope';
+import { NPMScopeUserEntity } from './entities/scope.user';
+import { NPMStarEntity } from './entities/star';
+import { NPMTagEntity } from './entities/tag';
+import { NPMTokenEntity } from './entities/token';
+import { NPMUserEntity } from './entities/user';
+import { NPMVersionEntity } from './entities/version';
+import { NPMError } from './middleware/error';
+import { Admin, CheckLogin, Login } from './middleware/login';
+import { Package } from './middleware/package';
+import { Scope } from './middleware/scope';
+import { Transaction } from './middleware/transaction';
+import { HttpRequest } from './model/request';
+import { IORedisService, MergedService, TypeORMService } from './model/service';
+import { PackageDownloadService } from './service/package.download';
+import { PackageKeyWordService } from './service/package.keyword';
+import { PackageMaintainerService } from './service/package.maintainer';
+import { PackageResolve } from './service/package.resolve';
+import { PackageStarService } from './service/package.star';
+import { PackageTagService } from './service/package.tag';
+import { PackageService } from './service/package';
+import { PackageVersionService } from './service/package.version';
+import { ScopeService } from './service/scope';
+import { ScopeUserService } from './service/scope.user';
+import { UserTokenService } from './service/user.token';
+import { UserService } from './service/user';
+
+const Server = {
+  HTTPServer,
+  DataBaseServer,
+  RedisServer,
+}
+
+const Repository = {
+  NPMDownloadEntity,
+  NPMKeyWordEntity,
+  NPMMaintainerEntity,
+  NPMPackageEntity,
+  NPMScopeEntity,
+  NPMScopeUserEntity,
+  NPMStarEntity,
+  NPMTagEntity,
+  NPMTokenEntity,
+  NPMUserEntity,
+  NPMVersionEntity,
+}
+
+const Middleware = {
+  NPMError,
+  Login,
+  Admin,
+  CheckLogin,
+  Package,
+  Scope,
+  Transaction,
+}
+
+const Model = {
+  HttpRequest,
+  MergedService,
+  TypeORMService,
+  IORedisService,
+}
+
+const Service = {
+  PackageDownloadService,
+  PackageKeyWordService,
+  PackageMaintainerService,
+  PackageResolve,
+  PackageStarService,
+  PackageTagService,
+  PackageService,
+  PackageVersionService,
+  ScopeService,
+  ScopeUserService,
+  SettingService,
+  UserTokenService,
+  UserService,
+}
+
+export {
+  Server,
+  Repository,
+  Middleware,
+  Model,
+  Service,
+  logger,
+  configs,
+}
 
 function main(_configs: RegistryConfigs) {
   configs.value = _configs;
@@ -39,6 +132,13 @@ function main(_configs: RegistryConfigs) {
       })
 
     logger.warn('Done', 'All servers started!');
+
+    if (configs.value.servers) {
+      for (let i = 0; i < configs.value.servers.length; i++) {
+        const server = configs.value.servers[i];
+        await useComponent(server);
+      }
+    }
   }
 }
 

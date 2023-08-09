@@ -9,6 +9,13 @@ import { DataBaseServer } from "./database";
 import { HttpRequest } from "../model/request";
 
 export const HTTPServer = createHttpServer(() => {
+  const controllers = [resolve(__dirname, '../controller')];
+  if (configs.value.controllers) {
+    if (!Array.isArray(configs.value.controllers)) {
+      configs.value.controllers = [configs.value.controllers];
+    }
+    controllers.push(...configs.value.controllers);
+  }
   return {
     port: configs.value.port,
     createRequest: ctx => new HttpRequest(ctx),
@@ -24,7 +31,7 @@ export const HTTPServer = createHttpServer(() => {
       }
     ],
     controllers: {
-      directory: resolve(__dirname, '../controller'),
+      directory: controllers,
       suffix: 'c',
     },
   }

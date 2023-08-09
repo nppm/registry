@@ -1,3 +1,4 @@
+import type { Component } from '@evio/visox';
 export interface RegistryConfigs {
   port: number,
   debug?: boolean,
@@ -19,6 +20,9 @@ export interface RegistryConfigs {
     db?: number;
   },
   authorization?: (body: { create?: true, hostname: string }) => Promise<{ doneUrl: string, loginUrl: string }>
+  controllers?: string | string[],
+  entities?: any[],
+  servers?: Component<any>[],
 }
 
 export interface RegistrySettings {
