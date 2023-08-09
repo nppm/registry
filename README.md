@@ -133,3 +133,216 @@ $ nppm scope public <scope>
 # 转让某个 scope 的所有者身份给另一个人
 $ nppm scope.owner <scope> <user>
 ```
+
+## Development
+
+程序允许二次开发，首先二次开发需要注意的是
+
+1. 你的`package.json`中的依赖项目必须包含`"@nppm/registry": "latest"`
+2. 需要一个入口文件，文件内容如下:
+
+```ts
+import createRegistry from '@nppm/registry';
+const meta = require('./nppm.configs.json');
+
+createRegistry(Object.assign(meta, {
+  // 以下只写定义：
+
+  // 当定义这个函数的时候，NPM 登录系统将进行第三方登录授权
+  authorization?: (body: { create?: true, hostname: string }) => Promise<{ doneUrl: string, loginUrl: string }>
+  // 自定义 controller 文件夹列表
+  controllers?: string | string[],
+  // 自定义 SQL entity 列表
+  entities?: any[],
+  // 自定义启动服务列表
+  servers?: Component<any>[],
+}))
+```
+
+### authorization
+
+一种第三方登录方式，如果定义，表示系统适用第三方登录方式。
+
+在 NPM 的命令航中，默认不开启这个功能，但是我们可以在我们的 NPPM 中适用这种方式。
+
+它可以是一个页面扫码也可以是一个登录页面注册登录。这个方式需要你自己定义。
+
+我们可以提供一些参考代码：
+
+**1. 配置**
+
+*index.js中*
+```ts
+async authorization(body) {
+  const res = await axios.post('http://127.0.0.1:3000/test/a', body);
+  return {
+    loginUrl: res.data.loginUrl,
+    doneUrl: res.data.doneUrl,
+  }
+}
+```
+
+**2. 入口接口**
+
+*/test/a.c.ts*
+
+```ts
+import { MD5 } from 'crypto-js';
+import { useComponent } from '@evio/visox';
+import { defineController } from '@evio/visox-http';
+import { RedisServer } from '../../server/redis';
+import { configs } from '../../configs';
+
+export default defineController('POST', [], async req => {
+  const body = req.getBody<{ create?: true, hostname: string }>();
+  const code = MD5(body.create + ':' + body.hostname + ':' + Date.now()).toString();
+  const redis = await useComponent(RedisServer);
+  await redis.setex(configs.toPath('test:' + code), 5 * 60, JSON.stringify({
+    token: code,
+    status: 0
+  }))
+  return req.response({
+    loginUrl: 'http://127.0.0.1:' + configs.value.port + '/test/b?token=' + code,
+    doneUrl: 'http://127.0.0.1:' + configs.value.port + '/test/d?token=' + code,
+  })
+})
+```
+
+**3. 登录页面**
+
+*/test/b.c.ts*
+
+```ts
+import { defineController } from "@evio/visox-http";
+
+export default defineController('GET', [], async req => {
+  const token = req.getQuery('token');
+  return req.response(`
+    <html>
+      <head>
+        <title>测试</title>
+      </head>
+      <body>
+        <input id="a" placeholder="name..." />
+        <br />
+        <button id="b">提交</button>
+        <script>
+          window.onload = function() {
+            document.getElementById('b').addEventListener('click', function() {
+              var val = document.getElementById('a').value;
+              window.location.href = 'http://127.0.0.1:3000/test/c?token=${token}&name=' + val;
+            })
+          }
+        </script>
+      </body>
+    </html>
+  `);
+})
+```
+
+**4. 操作页面**
+
+*/test/c.c.ts*
+
+```ts
+import { useComponent } from '@evio/visox';
+import { defineController } from '@evio/visox-http';
+import { RedisServer } from '../../server/redis';
+import { configs } from '../../configs';
+
+export default defineController('GET', [], async req => {
+  const token = req.getQuery('token');
+  const name = req.getQuery('name');
+  const key = configs.toPath('test:' + token);
+  const redis = await useComponent(RedisServer);
+
+  if (!(await redis.exists(key))) {
+    return req.response('找不到 key');
+  }
+
+  const state = JSON.parse(await redis.get(key)) as {
+    token: string,
+    status: number,
+  }
+
+  // 成功
+  await redis.setex(key, 60, JSON.stringify({
+    status: 1,
+    token: state.token,
+    user: {
+      account: name,
+      email: name + '@qq.com'
+    }
+  }))
+
+  return req.response('ok');
+
+  // 失败
+  // await redis.setex(key, 60, JSON.stringify({
+  //   status: -1,
+  //   token: state.token,
+  //   message: '一些错误'
+  // }))
+  // ctx.body = '失败'
+})
+```
+
+**5. 轮询页面**
+
+*/test/d.c.ts*
+
+```ts
+import { useComponent } from '@evio/visox';
+import { defineController } from '@evio/visox-http';
+import { configs } from '../../configs';
+import { RedisServer } from "../../server/redis";
+
+export default defineController('GET', [], async req => {
+  const token = req.getQuery('token');
+  const redis = await useComponent(RedisServer);
+  const key = configs.toPath('test:' + token);
+
+  if (!(await redis.exists(key))) {
+    return req.response({
+      status: 'unknow',
+    });
+  }
+
+  const state = JSON.parse(await redis.get(key)) as {
+    status: 0 | 1 | -1,
+    token: string,
+    user?: {
+      account: string,
+      email: string,
+    },
+    message?: string
+  };
+
+  if (state.status === 0) {
+    return req.response({
+      status: 'pending',
+    });
+  }
+
+  if (state.status === 1) {
+    await redis.del(key);
+    return req.response({
+      status: 'success',
+      user: Object.assign(state.user, { token }),
+    });
+  }
+
+  if (state.status === -1) {
+    await redis.del(key);
+    return req.response({
+      status: 'error',
+      message: state.message,
+    });
+  }
+
+  await redis.del(key);
+  return req.response({
+    status: 'unknow',
+  });
+})
+```
