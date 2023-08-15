@@ -15,6 +15,8 @@ import { SystemList, SystemSetting } from './sys';
 import { Admin } from './admin';
 import { logger } from '../logger';
 import { GetScopes, ScopeOwner, ScopePrivate, addScope, confirmScope, removeScope } from './scope';
+import { Forbiden } from './forbiden';
+import { cyan, gray } from 'chalk';
 
 const { version } = require('../../package.json');
 
@@ -108,16 +110,27 @@ program
   .description('模块所有者转让')
   .action(Wrapper(ScopeOwner))
 
+program
+  .command('forbiden <user>')
+  .description('禁止某人登录')
+  .action(Wrapper(async (user: string) => Forbiden('forbiden', user)));
+
+program
+  .command('allow <user>')
+  .description('允许某人登录')
+  .action(Wrapper(async (user: string) => Forbiden('allow', user)));
+
 program.command('*')
   .allowUnknownOption(true)
-  .action(() => {
+  .action(async () => {
     const registry = new Registry();
     const argvs: string[] = process.argv.slice(2);
     if (registry.current) {
       argvs.push('--registry=' + registry.current);
       argvs.push('--disturl=https://cdn.npmmirror.com/binaries/node');
     }
-    return new Promise((resolve, reject) => {
+    return await new Promise<void>((resolve, reject) => {
+      logger.info('using', gray(registry.current));
       const childprocess = spawn('npm', argvs, {
         env: process.env,
         cwd: process.cwd(),
@@ -125,9 +138,9 @@ program.command('*')
       });
       childprocess.on('exit', code => {
         if (code === 0) return resolve();
-        return reject(new Error(`\`npm ${argvs.join(' ')}\` exit with code ${code}`));
+        return reject(new Error(cyan('npm ' + process.argv.slice(2).join(' ')) + ' ' + gray(`exit with code ${code}`)));
       })
-    })
+    }).catch(e => logger.error('', e.message));
   });
 
 program.parseAsync(process.argv);

@@ -165,4 +165,10 @@ export class NPMUserEntity {
     this.gmtm = new Date();
     return this;
   }
+
+  public updateForbiden(value: boolean) {
+    this.forbiden = value;
+    this.gmtm = new Date();
+    return this;
+  }
 }

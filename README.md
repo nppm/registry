@@ -132,6 +132,12 @@ $ nppm scope public <scope>
 
 # 转让某个 scope 的所有者身份给另一个人
 $ nppm scope.owner <scope> <user>
+
+# 禁止某人登录
+$ nppm forbiden <user>
+
+# 允许某人登录
+$ nppm allow <user>
 ```
 
 ## Development
