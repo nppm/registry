@@ -29,7 +29,7 @@ export class PackageVersionService extends TypeORMService {
     })
   }
 
-  public add(uid: number, manifest: PackageManifest, md5: string) {
+  public add(uid: number, manifest: PackageManifest, md5: string, size: number) {
     return this.save(this.Version.create().add(
       this.pkg.sid,
       uid,
@@ -38,7 +38,8 @@ export class PackageVersionService extends TypeORMService {
       manifest.version,
       manifest.description,
       manifest,
-      md5
+      md5,
+      size,
     ))
   }
 

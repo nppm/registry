@@ -34,7 +34,8 @@ export class PackageService extends TypeORMService {
     manifest: PackageManifest,
     scope: NPMScopeEntity,
     md5: string,
-    tag: string
+    tag: string,
+    size: number,
   ) {
     let EPackage = await this.getOneByNameSpace(manifest.name);
     if (!EPackage) {
@@ -55,7 +56,7 @@ export class PackageService extends TypeORMService {
 
     // Version
     const VersionService = new PackageVersionService(this.conn, EPackage);
-    const EVersion = await VersionService.add(uid, manifest, md5);
+    const EVersion = await VersionService.add(uid, manifest, md5, size);
 
     // Maintainer
     const Maintainer = new PackageMaintainerService(this.conn, EPackage);

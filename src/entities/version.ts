@@ -71,6 +71,14 @@ export class NPMVersionEntity {
   })
   public md5: string;
 
+  @Index('size-idx')
+  @Column({
+    type: 'integer',
+    comment: '包大小',
+    default: 0,
+  })
+  public size: number;
+
   @Column({
     type: 'timestamp',
     comment: '创建时间'
@@ -92,6 +100,7 @@ export class NPMVersionEntity {
     description: string,
     manifest: PackageManifest,
     md5: string,
+    size: number,
   ) {
     this.sid = sid;
     this.uid = uid;
@@ -102,6 +111,7 @@ export class NPMVersionEntity {
     this.manifest = manifest;
     this.md5 = md5;
     this.deprecate = false;
+    this.size = size;
     this.gmtc = this.gmtm = new Date();
     return this;
   }

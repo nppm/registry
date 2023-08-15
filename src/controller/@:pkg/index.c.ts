@@ -48,7 +48,7 @@ export default [
       const Package = new PackageService(req.conn);
       const versions = await Package.getVersionsByNameSpace(body.name);
       const { version: versionManifest, md5, tag, tarball } = await pkg.vaildateAttachment(versions);
-      const version = await Package.publish(profile.id, versionManifest, scope, md5, tag);
+      const version = await Package.publish(profile.id, versionManifest, scope, md5, tag, tarball.length);
       const file = await pkg.saveTarBall(version.namespace, version.version, tarball);
       req.roll(() => unlink(file));
       return req.response({
