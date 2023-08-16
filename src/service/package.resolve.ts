@@ -5,6 +5,7 @@ import { ensureDir, writeFile } from 'fs-extra';
 import { PackageInComingProps, PackageManifest, PackageVersionsCompareProps } from "../types";
 import { NPMVersionEntity } from '../entities/version';
 import { configs } from '../configs';
+import { createHash } from 'node:crypto';
 
 export class PackageResolve {
   constructor(
@@ -60,13 +61,15 @@ export class PackageResolve {
       }
     }
 
-    const md5Hex = await import('md5-hex');
+    const hash = createHash('md5');
+    hash.update(tarballBuffer);
+    const md5 = hash.digest('hex');
 
     return {
       tarball: tarballBuffer,
       version,
       tag: distTagKeys[0],
-      md5: md5Hex.default(tarballBuffer),
+      md5,
     }
   }
 
