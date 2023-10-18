@@ -39,7 +39,6 @@ export default [
     Scope.Usable('pkg'),
     Package.Allow('pkg'),
   ], async req => {
-    const namespace = '@' + req.getParam('pkg');
     const tag = req.getParam('tag');
     if (tag === 'latest') {
       throw new Error('不能删除`latest`标签');

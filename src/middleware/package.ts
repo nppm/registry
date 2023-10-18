@@ -8,6 +8,7 @@ import { NPMPackageEntity } from "../entities/package";
 
 const Package = {
   Allow,
+  QueryAllow,
   CheckAllow(ctx: Context) {
     if (ctx.state.package === undefined) {
       throw new Error('请优先使用Package.Allowed中间件');
@@ -20,6 +21,30 @@ export {
   Package,
 }
 
+function QueryAllow(key: string, name?: string) {
+  return async (ctx: Context, next: Next) => {
+    const profile = CheckLogin(ctx);
+    const [scope] = Scope.CheckUsable(ctx);
+    let namespace: string = name ? ctx.params[key] + '/' + ctx.params['name'] : ctx.params[key];
+    namespace = namespace.startsWith('@') ? namespace : '@' + namespace;
+
+    const error = new Error('非法操作:权限不足');
+    const ScopeUser = new ScopeUserService(ctx.state.conn, scope);
+    const Package = new PackageService(ctx.state.conn);
+    const pkg = await Package.getOneByNameSpace(namespace);
+    const Maintainer = new PackageMaintainerService(ctx.state.conn, pkg);
+    const isMaintainer = !!(await Maintainer.getOne(profile.id, namespace));
+    const user = await ScopeUser.getOne(profile.id);
+
+    if (!scope.privatable && !pkg) throw new Error('找不到模块');
+    if (scope.privatable && !pkg && !user) throw error;
+    if (scope.privatable && pkg && !user && (pkg.uid !== profile.id && !isMaintainer)) throw error;
+
+    ctx.state.package = pkg;
+    await next();
+  }
+}
+
 function Allow(key: string, name?: string) {
   return async (ctx: Context, next: Next) => {
     const profile = CheckLogin(ctx);
@@ -27,7 +52,7 @@ function Allow(key: string, name?: string) {
     let namespace: string = name ? ctx.params[key] + '/' + ctx.params['name'] : ctx.params[key];
     namespace = namespace.startsWith('@') ? namespace : '@' + namespace;
 
-    const error = new Error('非法操作');
+    const error = new Error('非法操作:权限不足');
     const ScopeUser = new ScopeUserService(ctx.state.conn, scope);
     const Package = new PackageService(ctx.state.conn);
     const pkg = await Package.getOneByNameSpace(namespace);

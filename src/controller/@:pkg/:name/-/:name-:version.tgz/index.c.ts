@@ -16,14 +16,14 @@ export default defineController<'pkg' | 'name' | 'version'>('GET', [
   NPMError(404),
   Login,
   Scope.Usable('pkg'),
-  Package.Allow('pkg', 'name'),
+  Package.QueryAllow('pkg', 'name'),
 ], async req => {
   const pkg = req.getPackage();
-  if (!pkg) throw new Error('非法操作');
+  if (!pkg) throw new Error('非法操作:找不到模块');
 
   const PackageVersion = new PackageVersionService(req.conn, pkg);
   const version = await PackageVersion.getOneByVersion(req.getParam('version'));
-  if (!version) throw new Error('非法操作');
+  if (!version) throw new Error('非法操作:找不到版本');
 
   const Download = new PackageDownloadService(req.conn, version);
   await Download.increase(req.getProfile().id);
@@ -35,7 +35,7 @@ export default defineController<'pkg' | 'name' | 'version'>('GET', [
     req.getParam('version') + '.tgz'
   );
 
-  if (!existsSync(file)) throw new Error('非法操作');
+  if (!existsSync(file)) throw new Error('非法操作:找不到文件');
 
   return req.response(createReadStream(file));
 })
